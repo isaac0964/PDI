@@ -4,10 +4,11 @@ import numpy as np
 import math
 
 """
-Optimizaciones:
+Cambios:
 1. Cambiar el shape de dst de (m, n, 1) a (m, n)
-2. Rellenar espacios en negro con np.where (no esta listo)
-3. Cambiar el signo de la rotacion para hacerla en sentido antihorario
+2. Rellenar espacios en negro con np.where
+3. Cambiar el signo de la rotacion para hacerla en sentido antihorario 
+4. Hacer que la barra gris (lo que se sale de los limites de la imagen) se quede en las orillas
 
 """
 
@@ -39,8 +40,8 @@ cv2.namedWindow("Imagen Transformada")
 cv2.createTrackbar("theta", "Imagen Transformada", 0, 360, rot)
 cv2.createTrackbar("tx", "Imagen Transformada", 0, 200, transx)
 cv2.createTrackbar("ty", "Imagen Transformada", 0, 200, transy)
-cv2.createTrackbar("sx", "Imagen Transformada", 1, 3, scalex)
-cv2.createTrackbar("sy", "Imagen Transformada", 1, 3, scaley)
+cv2.createTrackbar("sx", "Imagen Transformada", 1, 20, scalex)
+cv2.createTrackbar("sy", "Imagen Transformada", 1, 20, scaley)
 
 while True:
     # Leer fotograma
@@ -70,8 +71,8 @@ while True:
     for i in range(dimensiones[0]):
         for j in range(dimensiones[1]):
             # Realizar rotacion
-            x = math.ceil(i * math.cos(theta) + j * math.sin(theta))
-            y = math.ceil(-i * math.sin(theta) + j * math.cos(theta))
+            x = math.ceil(i * math.cos(theta) - j * math.sin(theta))
+            y = math.ceil(i * math.sin(theta) + j * math.cos(theta))
 
             # Realizar escalamiento
             x *= sx
@@ -83,20 +84,18 @@ while True:
             if y + ty > dst.shape[1] - 1:
                 y = dst.shape[1] - 1 - ty
             if x + tx < 0:
-                x = 0
+                x = 0 - tx
             if y + ty < 0:
-                y = 0
+                y = 0 - ty
 
             # Asignar las nuevas coordenadas
             dst[x + tx][y + ty] = gray[i][j]
 
     # Rellenar espacios negros
-    #xs, ys = np.where(dst == 0)  # Obtener las coords de los pixeles en negro
-    #dst[xs, ys] = dst[xs, (ys+1)]
-    # for i in range(dst.shape[0]-1):
-    #     for j in range(dst.shape[1]-1):
-    #         if dst[i][j] == 0:
-    #             dst[i][j] = dst[i][j+1]
+    xs, ys = np.where(dst == 0)  # Obtener las coords de los pixeles en negro
+    # Clipear los limites para que al sumar el 1 el indice sea mayor que el tamano de la img
+    ys = np.clip(ys, 0, dst.shape[1] - 2)
+    dst[xs, ys] = dst[xs, (ys+1)]
             
     cv2.imshow("Imagen Transformada", dst)
 
