@@ -6,9 +6,10 @@ import math
 """
 Optimizaciones:
 1. Cambiar el shape de dst de (m, n, 1) a (m, n)
+2. Rellenar espacios en negro con np.where (no esta listo)
+3. Cambiar el signo de la rotacion para hacerla en sentido antihorario
 
 """
-
 
 # Capturar video de la webcam
 cap = cv2.VideoCapture(0)
@@ -24,13 +25,22 @@ dimensiones = src.shape
 # Funciones callback necesarias para el trackbar
 def rot(x):
     pass
-def trans(x):
+def transx(x):
+    pass
+def transy(x):
+    pass
+def scalex(x):
+    pass
+def scaley(x):
     pass
 
 # Crear la figura donde se mostrara la imagen transformada y el trackbar
 cv2.namedWindow("Imagen Transformada")
 cv2.createTrackbar("theta", "Imagen Transformada", 0, 360, rot)
-cv2.createTrackbar("t", "Imagen Transformada", 0, 200, trans)
+cv2.createTrackbar("tx", "Imagen Transformada", 0, 200, transx)
+cv2.createTrackbar("ty", "Imagen Transformada", 0, 200, transy)
+cv2.createTrackbar("sx", "Imagen Transformada", 1, 3, scalex)
+cv2.createTrackbar("sy", "Imagen Transformada", 1, 3, scaley)
 
 while True:
     # Leer fotograma
@@ -42,12 +52,19 @@ while True:
     
     # Matriz para la imagen transformada
     dst = np.zeros((dimensiones[0] + 200, dimensiones[1] + 200), np.uint8)
+
     # Leer theta del trackbar
     theta = cv2.getTrackbarPos("theta", "Imagen Transformada")
     # Convertir grados a radianes
     theta *= math.pi / 180
-    # Leer traslacion del trackbar
-    t = cv2.getTrackbarPos("t", "Imagen Transformada")
+
+    # Leer traslacion del trackbar en x y en y
+    tx = cv2.getTrackbarPos("tx", "Imagen Transformada")
+    ty = cv2.getTrackbarPos("ty", "Imagen Transformada")
+
+    # Leer la escala del trackbar en x y en y
+    sx = cv2.getTrackbarPos("sx", "Imagen Transformada")
+    sy = cv2.getTrackbarPos("sy", "Imagen Transformada")
     
     # Transformar cada pixel en la imagen
     for i in range(dimensiones[0]):
@@ -55,24 +72,34 @@ while True:
             # Realizar rotacion
             x = math.ceil(i * math.cos(theta) + j * math.sin(theta))
             y = math.ceil(-i * math.sin(theta) + j * math.cos(theta))
+
+            # Realizar escalamiento
+            x *= sx
+            y *= sy
             
             # Evitar salir de los limites
-            if x + t > dst.shape[0] - 1:
-                x = dst.shape[0] - 1 - t
-            if y + t > dst.shape[1] - 1:
-                y = dst.shape[1] - 1 - t
-            if x + t < 0:
+            if x + tx > dst.shape[0] - 1:
+                x = dst.shape[0] - 1 - tx
+            if y + ty > dst.shape[1] - 1:
+                y = dst.shape[1] - 1 - ty
+            if x + tx < 0:
                 x = 0
-            if y + t < 0:
+            if y + ty < 0:
                 y = 0
+
             # Asignar las nuevas coordenadas
-            dst[x + t][y + t] = gray[i][j]
+            dst[x + tx][y + ty] = gray[i][j]
+
+    # Rellenar espacios negros
+    #xs, ys = np.where(dst == 0)  # Obtener las coords de los pixeles en negro
+    #dst[xs, ys] = dst[xs, (ys+1)]
+    # for i in range(dst.shape[0]-1):
+    #     for j in range(dst.shape[1]-1):
+    #         if dst[i][j] == 0:
+    #             dst[i][j] = dst[i][j+1]
+            
     cv2.imshow("Imagen Transformada", dst)
 
     # Salir si se presiona la q
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
-
-
-
-
