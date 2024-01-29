@@ -95,7 +95,7 @@ while True:
     xs, ys = np.where(dst == 0)  # Obtener las coords de los pixeles en negro
     # Clipear los limites para que al sumar el 1 el indice sea mayor que el tamano de la img
     ys = np.clip(ys, 0, dst.shape[1] - 2)
-    dst[xs, ys] = dst[xs, (ys+1)]
+    dst[xs][ys] = dst[xs][ys+1]
             
     cv2.imshow("Imagen Transformada", dst)
 
