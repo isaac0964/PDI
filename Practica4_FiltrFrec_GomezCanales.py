@@ -30,16 +30,7 @@ def generar_LPGaussiano(sigma, size: tuple):
     # Hacer el inverse shift para ponerlo en la posicion correcta
     return np.fft.ifftshift(H_LP_G)
 
-def aplicarFiltFrec(Im, H):
-    """
-    Esta funcion aplica filtros en frecuencia
-    input: 
-        Im: Imagen que se desea filtrar
-        H: Filtro en frecuenca
-    output: imagen filtrada
-    """
-    FIm = np.fft.fft2(Im)
-    ImFilt = FIm * H
+
 
 # Capturar video
 cap = cv.VideoCapture(0)
