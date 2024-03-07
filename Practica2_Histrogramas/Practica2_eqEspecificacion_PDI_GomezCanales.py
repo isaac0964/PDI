@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 
 def acumulado(figure, img):
     color = ("b", "g", "r")
     H = np.zeros((256, 3))
+    print(type(H))
     for i, c in enumerate(color):
         hist = cv2.calcHist([img], [i], None, [256], [0, 256])
         acc = 0
