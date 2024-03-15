@@ -35,15 +35,15 @@ def detectar_mov(Ig, I_ref, kernel, it_er, it_dil):
     Ig = cv.GaussianBlur(Ig, (21, 21), -1)
 
     # Obtener diferencia y binarizar
-    I_diff = np.abs(I_ref - Ig)  # Diferencia entre la imagen de referencia y la actual
+    I_diff = cv.absdiff(I_ref, Ig) # Diferencia entre la imagen de referencia y la actual
     # cv.threshold(I, thresh, valor si I(x,y) > thresh, metodo de umbralizacion)
-    _, I_diff_bin = cv.threshold(I_diff, 180, 255, cv.THRESH_BINARY)  # Binarizar la imagen de diferencia e invertirla
+    _, I_diff_bin = cv.threshold(I_diff, 30, 255, cv.THRESH_BINARY)  # Binarizar la imagen de diferencia e invertirla
 
     # Erosionar y dilatar la imagen binaria 
     im_salida = cv.erode(I_diff_bin, kernel, iterations=it_er)
     im_salida = cv.dilate(im_salida, kernel, iterations=it_dil)
 
-    cv.imshow("2", im_salida)
+    cv.imshow("Segmentacion movimento", im_salida)
 
     #im_salida = cv.bitwise_not(im_salida)
 
@@ -96,7 +96,7 @@ while True:
             continue
         x, y, w, h = cv.boundingRect(c)
         cv.rectangle(I, (x, y), (x+w, y+h), (0, 255, 0), 2)
-    cv.putText(I, f"Numero de objetos encontrados: {len(keypoints)}", (10, 25), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    cv.putText(I, f"Numero de objetos en movimiento: {len(keypoints)}", (10, 25), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
     # Mostrar deteccion de movimiento
     cv.imshow("Deteccion", I)
