@@ -44,10 +44,7 @@ def detectar_mov(Ig, I_ref, kernel, it_er, it_dil):
     im_salida = cv.dilate(im_salida, kernel, iterations=it_dil)
 
     cv.imshow("Segmentacion movimento", im_salida)
-
-    #im_salida = cv.bitwise_not(im_salida)
-
-    # La imagen se invierte porque SimpleBlobDetector detecta blobs negros
+    # Detectar contornos de objetos en movimiento
     keypoints, _ = cv.findContours(im_salida, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     return keypoints
 
@@ -92,8 +89,6 @@ while True:
 
     # Dibujar los contornos en la imagen
     for c in keypoints:
-        if cv.contourArea(c) < 1200:
-            continue
         x, y, w, h = cv.boundingRect(c)
         cv.rectangle(I, (x, y), (x+w, y+h), (0, 255, 0), 2)
     cv.putText(I, f"Numero de objetos en movimiento: {len(keypoints)}", (10, 25), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
