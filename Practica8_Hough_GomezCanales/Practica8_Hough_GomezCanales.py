@@ -5,7 +5,6 @@
 from skimage.transform import hough_line, hough_line_peaks
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import cv2
 
 def transformadaHough(img):
