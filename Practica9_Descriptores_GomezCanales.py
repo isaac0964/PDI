@@ -10,7 +10,7 @@ def capturarImgs(cap):
     """
     Esta funcion se usa para capturar las dos imagenes para generar una imagen panoramica
     - Input: cap: webcam
-    - Output: Img panoramica
+    - Output: Img panoramicaq
     """
     # Tomar imagen 1
     while True:
@@ -40,7 +40,7 @@ I1, I2 = capturarImgs(cap)
 
 # Crear descriptor y matcher
 akaze = cv.AKAZE_create()
-bf = cv.BFMatcher(cv.NORM_HAMMING)
+bf = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True)
 
 # Calcular Keypoints y Features de cada imagen
 keypoints1, features1 = akaze.detectAndCompute(I1, None)
@@ -50,7 +50,7 @@ keypoints2, features2 = akaze.detectAndCompute(I2, None)
 matches = bf.match(features1, features2)
 matches = sorted(matches, key=lambda x: x.distance)
 
-# Obtener los top 100 matches para calcular matriz de homografia
+# Obtener los top 200 matches para calcular matriz de homografia
 left = []
 right = []
 for m in matches[:100]:
@@ -72,9 +72,10 @@ comb = cv.warpPerspective(I2, M, dims)
 comb[:I1.shape[0], :I1.shape[1]] = I1
 
 # Recortar imagen para eliminar bordes negros
-r_crop = 890  # Recortar hasta donde aparezca el primer pixel negro
+r_crop = 1000  # Recortar hasta donde aparezca el primer pixel negro
 comb = comb[:, :r_crop]
 
+cv.imshow("Matches", cv.drawMatches(I1, keypoints1, I2, keypoints2, matches[:100], None, matchColor=(0,0,255), flags=cv.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS))
 cv.imshow("Imagen Combinada", comb)
 cv.waitKey(0)
 

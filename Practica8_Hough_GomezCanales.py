@@ -62,7 +62,7 @@ image[idx, idx] = 255
 # Probar la transformada con la imagen muestra (imagen de una X)
 transformadaHough(image)
 
-atico = cv2.imread("Practica8_Hough_GomezCanales/atico.jpg", cv2.IMREAD_GRAYSCALE)
+atico = cv2.imread("imgs/atico.jpg", cv2.IMREAD_GRAYSCALE)
 # Binarizar imagen
 atico_b = cv2.Canny(atico, 50, 200, None, 3)
 
